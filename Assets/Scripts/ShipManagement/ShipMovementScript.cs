@@ -107,6 +107,14 @@ public class ShipMovementScript : MonoBehaviour {
         {
             result = new Movement.StationaryMovement(movementStruct.SpeedInt, movementStruct.Direction, movementStruct.Bearing, movementStruct.ColorComplexity);
         }
+        else if (movementStruct.Bearing == Movement.ManeuverBearing.Reverse)
+        {
+            result = new Movement.StraightMovement(movementStruct.SpeedInt, movementStruct.Direction, movementStruct.Bearing, movementStruct.ColorComplexity);
+        }
+        else if (movementStruct.Bearing == Movement.ManeuverBearing.ReverseBank)
+        {
+            result = new Movement.BankMovement(movementStruct.SpeedInt, movementStruct.Direction, movementStruct.Bearing, movementStruct.ColorComplexity);
+        }
 
         return result;
     }

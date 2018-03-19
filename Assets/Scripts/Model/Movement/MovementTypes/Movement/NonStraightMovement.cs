@@ -57,7 +57,7 @@ namespace Movement
             {
                 float turningDirection = (Direction == ManeuverDirection.Right) ? 1 : -1;
 
-                int progressDirection = 1;
+                int progressDirection = Bearing == ManeuverBearing.ReverseBank ? -1 : 1;
                 Selection.ThisShip.RotateAround(Selection.ThisShip.TransformPoint(new Vector3(turningAroundDistance * turningDirection, 0, 0)), turningDirection * progressDelta * progressDirection);
 
                 if (ProgressTarget != 0) Selection.ThisShip.RotateModelDuringTurn((ProgressCurrent / ProgressTarget) * (1 - 0.2f*finisherTargetSuccess));
@@ -65,7 +65,7 @@ namespace Movement
             }
             else
             {
-                Vector3 progressDirection = Vector3.forward;
+                Vector3 progressDirection = Vector3.forward; //Bearing == ManeuverBearing.ReverseBank ? Vector3.back : Vector3.forward;
                 Selection.ThisShip.SetPosition(Vector3.MoveTowards(Selection.ThisShip.GetPosition(), Selection.ThisShip.GetPosition() + Selection.ThisShip.TransformDirection(progressDirection), progressDelta));
 
                 if (finisherTargetSuccess != 0) Selection.ThisShip.RotateModelDuringTurn((1 - 0.2f * finisherTargetSuccess) + (ProgressCurrent / ProgressTarget) * 0.2f);
@@ -138,26 +138,6 @@ namespace Movement
             }
         }
 
-        //TEMPORARY
-        public void UpdatePlanningRotationFinisher1(GameObject temporaryShipStand)
-        {
-            if (MovementTemplates.CurrentTemplate.transform.Find("Finisher") != null)
-            {
-                bool isSuccessfull = TryPlanningRotateUsingStarter(temporaryShipStand);
-
-                if (!isSuccessfull)
-                {
-                    if (GetPathToProcessFinisherLeft(temporaryShipStand) > 0)
-                    {
-                        AdaptShipBaseToRotation(temporaryShipStand, lastPlanningRotation2);
-
-                        float angleToNearestCenterPoint = GetAngleToLastSavedTemplateCenterPoint(temporaryShipStand);
-                        temporaryShipStand.transform.localEulerAngles += new Vector3(0, angleToNearestCenterPoint * GetDirectionModifier(), 0);
-                    }
-                }
-            }
-        }
-
         // PLANNING
 
         public override GameObject[] PlanMovement()
@@ -189,7 +169,8 @@ namespace Movement
                 if (i > 0)
                 {
                     float turningDirection = (Direction == ManeuverDirection.Right) ? 1 : -1;
-                    ShipStand.transform.RotateAround(Selection.ThisShip.TransformPoint(new Vector3(turningAroundDistance * turningDirection, 0, 0)), new Vector3(0, 1, 0), turningDirection * step);
+                    int progressDirection = Bearing == ManeuverBearing.ReverseBank ? -1 : 1;
+                    ShipStand.transform.RotateAround(Selection.ThisShip.TransformPoint(new Vector3(turningAroundDistance * turningDirection, 0, 0)), new Vector3(0, 1, 0), turningDirection * step * progressDirection);
 
                     UpdatePlanningRotation(ShipStand);
 
@@ -208,7 +189,8 @@ namespace Movement
             distancePart = Selection.ThisShip.ShipBase.GetShipBaseDistance() / 20;
             for (int i = 1; i <= 20; i++)
             {
-                position = Vector3.MoveTowards(position, position + savedShipStand.transform.TransformDirection(Vector3.forward), distancePart);
+                Vector3 progressDirection = Bearing == ManeuverBearing.ReverseBank ? Vector3.back : Vector3.forward;
+                position = Vector3.MoveTowards(position, position + savedShipStand.transform.TransformDirection(progressDirection), distancePart);
                 GameObject prefab = (GameObject)Resources.Load(Selection.ThisShip.ShipBase.TemporaryPrefabPath, typeof(GameObject));
                 GameObject ShipStand = MonoBehaviour.Instantiate(prefab, position, savedShipStand.transform.rotation, Board.BoardManager.GetBoard());
 
@@ -340,6 +322,10 @@ namespace Movement
 
         private int GetDirectionModifier()
         {
+            if (Bearing == ManeuverBearing.ReverseBank) 
+            {
+                return (Direction == ManeuverDirection.Right) ? -1 : 1;
+            }
             return (Direction == ManeuverDirection.Right) ? 1 : -1;
         }
 

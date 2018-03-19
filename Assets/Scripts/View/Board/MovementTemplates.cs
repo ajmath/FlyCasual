@@ -68,6 +68,12 @@ public static class MovementTemplates {
             {
                 CurrentTemplate.eulerAngles = CurrentTemplate.eulerAngles + new Vector3(180f, 0f, 0f);
             }
+
+            if (movement.Bearing == Movement.ManeuverBearing.Reverse || movement.Bearing == Movement.ManeuverBearing.ReverseBank)
+            {
+                CurrentTemplate.eulerAngles = CurrentTemplate.eulerAngles + new Vector3(0f, -180f, 0f);
+                CurrentTemplate.position -= (thisShip.GetCenter() - thisShip.GetBack()) * 2;
+            }
         }
     }
 
@@ -100,6 +106,10 @@ public static class MovementTemplates {
                     return Templates.Find("straight" + movement.Speed);
                 case Movement.ManeuverBearing.Stationary:
                     return null;
+                case Movement.ManeuverBearing.Reverse:
+                    return Templates.Find("straight" + movement.Speed);
+                case Movement.ManeuverBearing.ReverseBank:
+                    return Templates.Find("bank" + movement.Speed);
             }
         }
         return result;

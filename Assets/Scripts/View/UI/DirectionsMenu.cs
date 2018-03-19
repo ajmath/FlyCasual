@@ -73,13 +73,15 @@ public static class DirectionsMenu
         {
             string[] parameters = maneuverData.Key.Split('.');
             string maneuverSpeed = parameters[0];
+            bool isReverse = parameters[2] == "U" || parameters[2] == "I";
 
             GameObject button = DirectionsWindow.transform.Find("Directions").Find("Speed" + maneuverSpeed).Find(maneuverData.Key).gameObject;
             if (maneuverData.Value != Movement.ManeuverColor.None)
             {
                 if (filter == null || filter(maneuverData.Key))
                 {
-                    if (!linesExist.Contains(int.Parse(maneuverSpeed))) linesExist.Add(int.Parse(maneuverSpeed));
+                    int lineSpeed = (isReverse ? -1 : 1) * int.Parse(maneuverSpeed);
+                    if (!linesExist.Contains(lineSpeed)) linesExist.Add(lineSpeed);
 
                     SetManeuverColor(button, maneuverData);
                     button.SetActive(true);
@@ -102,12 +104,14 @@ public static class DirectionsMenu
         {
             string[] parameters = maneuverCode.Split('.');
             string maneuverSpeed = parameters[0];
+            bool isReverse = parameters[2] == "U" || parameters[2] == "I";
 
             GameObject button = DirectionsWindow.transform.Find("Directions").Find("Speed" + maneuverSpeed).Find(maneuverCode).gameObject;
 
             if (filter == null || filter(maneuverCode))
             {
-                if (!linesExist.Contains(int.Parse(maneuverSpeed))) linesExist.Add(int.Parse(maneuverSpeed));
+                int lineSpeed = (isReverse ? -1 : 1) * int.Parse(maneuverSpeed);
+                if (!linesExist.Contains(lineSpeed)) linesExist.Add(lineSpeed);
 
                 SetManeuverColor(button, new KeyValuePair<string, Movement.ManeuverColor>(maneuverCode, Movement.ManeuverColor.White));
                 button.SetActive(true);
@@ -170,7 +174,7 @@ public static class DirectionsMenu
         {
             if (!linesExist.Contains(i))
             {
-                int rowFixed = (i != -1) ? i : 6;
+                int rowFixed = Math.Abs(i);
 
                 GameObject numbersLinePanel = DirectionsWindow.transform.Find("Numbers").gameObject;
                 numbersLinePanel.transform.Find("Speed" + rowFixed).gameObject.SetActive(false);

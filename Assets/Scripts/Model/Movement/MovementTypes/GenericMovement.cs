@@ -33,7 +33,8 @@ namespace Movement
         SegnorsLoop,
         TallonRoll,
         Stationary,
-        Reverse
+        Reverse,
+        ReverseBank
     }
 
     public enum ManeuverColor
@@ -112,6 +113,12 @@ namespace Movement
                     break;
                 case "T":
                     bearing = ManeuverBearing.Turn;
+                    break;
+                case "U":
+                    bearing = ManeuverBearing.Reverse;
+                    break;
+                case "I":
+                    bearing = ManeuverBearing.ReverseBank;
                     break;
             }
 
@@ -249,6 +256,12 @@ namespace Movement
                     break;
                 case ManeuverBearing.Stationary:
                     maneuverString += "S";
+                    break;
+                case ManeuverBearing.Reverse:
+                    maneuverString += "U";
+                    break;
+                case ManeuverBearing.ReverseBank:
+                    maneuverString += "I";
                     break;
                 default:
                     break;
@@ -472,6 +485,12 @@ namespace Movement
                 case ManeuverBearing.Stationary:
                     maneuverString += "S";
                     break;
+                case ManeuverBearing.Reverse:
+                    maneuverString += "U";
+                    break;
+                case ManeuverBearing.ReverseBank:
+                    maneuverString += "I";
+                    break;
                 default:
                     break;
             }
@@ -507,18 +526,10 @@ namespace Movement
                     result = "5";
                     break;
                 case ManeuverBearing.Reverse:
-                    switch (Direction)
-                    {
-                        case ManeuverDirection.Left:
-                            result = "J";
-                            break;
-                        case ManeuverDirection.Forward:
-                            result = "K";
-                            break;
-                        case ManeuverDirection.Right:
-                            result = "L";
-                            break;
-                    }
+                    result = "K";
+                    break;
+                case ManeuverBearing.ReverseBank:
+                    result = (Direction == ManeuverDirection.Left) ? "J" : "L";
                     break;
                 default:
                     break;
@@ -596,6 +607,10 @@ namespace Movement
             result.Add("1.R.R");
             result.Add("2.R.R");
             result.Add("3.R.R");
+
+            result.Add("1.L.I");
+            result.Add("1.F.U");
+            result.Add("1.R.I");
 
             return result;
         }

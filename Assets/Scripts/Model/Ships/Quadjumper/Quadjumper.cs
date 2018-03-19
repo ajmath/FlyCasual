@@ -49,6 +49,10 @@ namespace Ship
 
             private void AssignTemporaryManeuvers()
             {
+                Maneuvers.Add("1.L.I", ManeuverColor.Red);
+                Maneuvers.Add("1.F.U", ManeuverColor.Red);
+                Maneuvers.Add("1.R.I", ManeuverColor.Red);
+
                 Maneuvers.Add("1.L.T", ManeuverColor.White);
                 Maneuvers.Add("1.F.S", ManeuverColor.White);
                 Maneuvers.Add("1.R.T", ManeuverColor.White);
